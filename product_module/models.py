@@ -12,6 +12,8 @@ class Products(models.Model):
     # image_list = models.ManyToManyField('ProductImages', verbose_name='Gallery', related_name='product')
     # sizes = models.ManyToManyField('ProductSize', verbose_name='Size', related_name='product')
     color = models.CharField(max_length=30, verbose_name='Color')
+    brand = models.ForeignKey('ProductBrands', on_delete=models.CASCADE, related_name='products', verbose_name='Brand',
+                              null=True, blank=True)
     is_available = models.BooleanField(default=True)
 
     class Meta:
@@ -62,3 +64,11 @@ class ProductDescription(models.Model):
 
     def __str__(self):
         return f'{self.product.name} - {self.description[:15]}'
+
+
+class ProductBrands(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Name')
+    slug = models.SlugField(max_length=100, verbose_name='Slug')
+
+    def __str__(self):
+        return self.name
