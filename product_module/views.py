@@ -1,12 +1,14 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 
-from .serializers import ProductSerializers
+from .serializers import ProductSerializers, ProductFavoriteSerializer
+from .permissions import IsOwnerAccOrAdmin
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from product_module.models import Products
+from product_module.models import Products, ProductFavorite
 
 
 class ProductListView(APIView):
@@ -14,8 +16,21 @@ class ProductListView(APIView):
     serializer = ProductSerializers
     data = Products.objects.filter(is_available=True)
 
-    def get(self, request):
-        srz_data = self.serializer(instance=self.data, many=True).data
+    def get(self, request, *args, **kwargs):
+        final_data = self.data
+        size = request.GET.get('size')
+        if size:
+            final_data = final_data.filter(size__size__iexact=size)
+        category = request.GET.get('category')
+        if category:
+            final_data = final_data.filter(category__iexact=category)
+        color = request.GET.get('color')
+        if color:
+            final_data = final_data.filter(color__iexact=color)
+        brand = request.GET.get('brand')
+        if brand:
+            final_data = final_data.filter(brand__name__iexact=brand)
+        srz_data = self.serializer(instance=final_data, many=True).data
         return Response(data=srz_data, status=status.HTTP_200_OK)
 
 
@@ -64,3 +79,17 @@ class ProductDeleteView(APIView):
         data.is_available = False
         data.save()
         return Response({"successfully": 'disabled'}, status=status.HTTP_200_OK)
+
+
+class ProductFavoriteView(APIView):
+    # todo: custom perm
+    permission_classes = [permissions.AllowAny, ]
+    serializer_class = ProductFavoriteSerializer
+
+    def get(self, request, pk=None):
+        data = ProductFavorite.objects.all()
+        if pk:
+            user = get_object_or_404(User, pk=pk)
+            data = data.filter(user_id=user.id)
+        srz_data = ProductFavoriteSerializer(instance=data, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)

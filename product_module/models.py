@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -72,3 +73,13 @@ class ProductBrands(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductFavorite(models.Model):
+    product = models.ForeignKey('Products', on_delete=models.CASCADE, related_name='favorites')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.product.name}'
+
+

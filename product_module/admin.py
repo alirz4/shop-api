@@ -7,4 +7,5 @@ admin.site.register(models.ProductImages)
 admin.site.register(models.ProductSize)
 admin.site.register(models.ProductDescription)
 admin.site.register(models.ProductBrands)
+admin.site.register(models.ProductFavorite)
 

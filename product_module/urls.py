@@ -10,4 +10,6 @@ urlpatterns = [
     path('edit/<int:pk>/', views.ProductEditView.as_view(), name='prod-edit'),
     path('create/', views.ProductCreateView.as_view(), name='prod-create'),
     path('delete/<int:pk>/', views.ProductDeleteView.as_view(), name='prod-delete'),
+    path('favorite-prods/', views.ProductFavoriteView.as_view(), name='fave-prods'),
+    path('favorite-prods/<int:pk>/', views.ProductFavoriteView.as_view(), name='fave-prods-user'),
 ]
