@@ -40,6 +40,7 @@ class ProductSize(models.Model):
         ('L', 'L'),
         ('XL', 'XL'),
         ('2XL', '2XL'),
+        ('3XL', '3XL'),
     )
     size = models.CharField(max_length=10, verbose_name='Size', choices=SIZE)
     stoke = models.IntegerField(validators=[MinValueValidator(0), ], verbose_name='Stoke')
@@ -83,3 +84,16 @@ class ProductFavorite(models.Model):
         return f'{self.user.username} - {self.product.name}'
 
 
+class Banner(models.Model):
+    CHOICES = (
+        ('SW', 'SW'),
+        ('SW1', 'SW1'),
+        ('SW2', 'SW2'),
+    )
+    title = models.CharField(max_length=150, verbose_name='Title')
+    image = models.ImageField(upload_to='banners', verbose_name='Image')
+    description = models.TextField()
+    location = models.CharField(max_length=30, choices=CHOICES, verbose_name='Location')
+
+    def __str__(self):
+        return self.title

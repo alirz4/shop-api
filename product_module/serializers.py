@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from product_module.models import Products, ProductSize, ProductImages, ProductDescription, ProductFavorite
+from product_module.models import Products, ProductSize, ProductImages, ProductDescription, ProductFavorite, Category, \
+    ProductBrands
 
 
 class ProductSerializers(serializers.ModelSerializer):
@@ -46,7 +47,19 @@ class ProductDescSerializer(serializers.ModelSerializer):
         exclude = ['id', 'product']
 
 
+class ProductCategory(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
 class ProductFavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductFavorite
         exclude = ['id', ]
+
+
+class ProductBrand(serializers.ModelSerializer):
+    class Meta:
+        model = ProductBrands
+        fields = '__all__'

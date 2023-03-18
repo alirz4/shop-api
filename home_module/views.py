@@ -27,4 +27,3 @@ class UserRegisterView(APIView):
             User.objects.create_user(username=cd['username'], email=cd['email'], password=cd['password'])
             return Response(data=srz_data.data, status=status.HTTP_200_OK)
         return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
