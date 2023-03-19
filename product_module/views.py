@@ -1,14 +1,15 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
+from rest_framework.viewsets import ViewSet
 
-from .serializers import ProductSerializers, ProductFavoriteSerializer
+from .serializers import ProductSerializers, ProductFavoriteSerializer, ProductCategory
 from .permissions import IsOwnerAccOrAdmin
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from product_module.models import Products, ProductFavorite
+from product_module.models import Products, ProductFavorite, Category
 
 
 class ProductListView(APIView):
@@ -93,3 +94,48 @@ class ProductFavoriteView(APIView):
             data = data.filter(user_id=user.id)
         srz_data = ProductFavoriteSerializer(instance=data, many=True).data
         return Response(data=srz_data, status=status.HTTP_200_OK)
+
+
+class ProductCategoryView(ViewSet):
+    """
+    CRUD for products category
+    """
+
+    queryset = Category.objects.filter(is_available=True)
+
+    def get_permissions(self):
+        if self.action == 'list' or 'retrieve':
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+    def list(self, request):
+        srz_data = ProductCategory(instance=self.queryset, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = ProductCategory(instance=data).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        srz_data = ProductCategory(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = ProductCategory(instance=data, data=request.data, partial=True)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        data.is_available = False
+        data.save()
+        return Response(data={'SUCCESSFULLY': 'Deactivated'})

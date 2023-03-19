@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework import routers
 
 from . import views
 
@@ -13,3 +14,8 @@ urlpatterns = [
     path('favorite-prods/', views.ProductFavoriteView.as_view(), name='fave-prods'),
     path('favorite-prods/<int:pk>/', views.ProductFavoriteView.as_view(), name='fave-prods-user'),
 ]
+
+router = routers.SimpleRouter()
+router.register(prefix='category', viewset=views.ProductCategoryView)
+
+urlpatterns += router.urls
