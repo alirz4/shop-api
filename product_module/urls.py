@@ -17,6 +17,11 @@ urlpatterns = [
 
 router = routers.SimpleRouter()
 router.register(prefix='category', viewset=views.ProductCategoryViewSet)
-router.register(prefix='', viewset=views.ProductViewSet)
+router.register(prefix='prod-info', viewset=views.ProductInfoViewSet)
+router.register(prefix='prod', viewset=views.ProductViewSet)
+router.register(prefix='prod-img', viewset=views.ProductImageViewSet)
+router.register(prefix='prod-desc', viewset=views.ProductDescViewSet)
+router.register(prefix='prod-brand', viewset=views.ProductBrandViewSet)
+
 
 urlpatterns += router.urls

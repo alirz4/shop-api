@@ -2,17 +2,22 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from rest_framework.viewsets import ViewSet
 
-from .serializers import ProductSerializers, ProductFavoriteSerializer, ProductCategory
+from .serializers import ProductSerializers, ProductFavoriteSerializer, ProductCategory, ProductSizeSerializer, \
+    ProductImagesSerializer, ProductDescSerializer, ProductBrandSerializer
 from .permissions import IsOwnerAccOrAdmin
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from product_module.models import Products, ProductFavorite, Category
+from product_module.models import Products, ProductFavorite, Category, ProductSize, ProductImages, ProductDescription, \
+    ProductBrands, Banner
 
 
 class ProductViewSet(ViewSet):
+    """
+    CRUD for products
+    """
     queryset = Products.objects.filter(is_available=True)
     serializer = ProductSerializers
 
@@ -82,6 +87,7 @@ class ProductFavoriteView(APIView):
         return Response(data=srz_data, status=status.HTTP_200_OK)
 
 
+# todo : class vars
 class ProductCategoryViewSet(ViewSet):
     """
     CRUD for products category
@@ -125,3 +131,144 @@ class ProductCategoryViewSet(ViewSet):
         data.is_available = False
         data.save()
         return Response(data={'SUCCESSFULLY': 'Deactivated'})
+
+
+class ProductInfoViewSet(ViewSet):
+    queryset = ProductSize.objects.all()
+    serializer = ProductSizeSerializer
+    permission_classes = [permissions.IsAdminUser, ]
+
+    def list(self, request):
+        srz_data = self.serializer(instance=self.queryset, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        srz_data = self.serializer(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data, data=request.data, partial=True)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        data.delete()
+        return Response(data={'successfully': 'deleted'})
+
+
+class ProductImageViewSet(ViewSet):
+    queryset = ProductImages.objects.all()
+    serializer = ProductImagesSerializer
+
+    permission_classes = [permissions.IsAdminUser, ]
+
+    def list(self, request):
+        srz_data = self.serializer(instance=self.queryset, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        srz_data = self.serializer(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data, data=request.data, partial=True)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        data.delete()
+        return Response(data={'successfully': 'deleted'})
+
+
+class ProductDescViewSet(ViewSet):
+    queryset = ProductDescription.objects.all()
+    serializer = ProductDescSerializer
+    permission_classes = [permissions.IsAdminUser, ]
+
+    def list(self, request):
+        srz_data = self.serializer(instance=self.queryset, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        srz_data = self.serializer(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data, data=request.data, partial=True)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        data.delete()
+        return Response(data={'successfully': 'deleted'})
+
+
+class ProductBrandViewSet(ViewSet):
+    queryset = ProductBrands.objects.all()
+    serializer = ProductBrandSerializer
+    permission_classes = [permissions.IsAdminUser, ]
+
+    def list(self, request):
+        srz_data = self.serializer(instance=self.queryset, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        srz_data = self.serializer(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        srz_data = self.serializer(instance=data, data=request.data, partial=True)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(data=srz_data.data, status=status.HTTP_200_OK)
+        return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
+        data.delete()
+        return Response(data={'successfully': 'deleted'})

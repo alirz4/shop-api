@@ -59,7 +59,7 @@ class ProductFavoriteSerializer(serializers.ModelSerializer):
         exclude = ['id', ]
 
 
-class ProductBrand(serializers.ModelSerializer):
+class ProductBrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductBrands
         fields = '__all__'
