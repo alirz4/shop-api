@@ -12,13 +12,19 @@ from rest_framework.views import APIView
 from product_module.models import Products, ProductFavorite, Category
 
 
-class ProductListView(APIView):
-    permission_classes = [permissions.AllowAny, ]
+class ProductViewSet(ViewSet):
+    queryset = Products.objects.filter(is_available=True)
     serializer = ProductSerializers
-    data = Products.objects.filter(is_available=True)
 
-    def get(self, request, *args, **kwargs):
-        final_data = self.data
+    def get_permissions(self):
+        if self.action == 'list' or 'retrieve':
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+    def list(self, request, *args, **kwargs):
+        final_data = self.queryset
         size = request.GET.get('size')
         if size:
             final_data = final_data.filter(size__size__iexact=size)
@@ -34,23 +40,13 @@ class ProductListView(APIView):
         srz_data = self.serializer(instance=final_data, many=True).data
         return Response(data=srz_data, status=status.HTTP_200_OK)
 
-
-class ProductDetailView(APIView):
-    serializer = ProductSerializers
-    permission_classes = [permissions.AllowAny, ]
-
-    def get(self, request, pk):
-        data = get_object_or_404(Products, pk=pk)
+    def retrieve(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
         srz_data = self.serializer(instance=data).data
         return Response(data=srz_data, status=status.HTTP_200_OK)
 
-
-class ProductEditView(APIView):
-    serializer = ProductSerializers
-    permission_classes = [permissions.IsAdminUser, ]
-
-    def put(self, request, pk):
-        data = get_object_or_404(Products, pk=pk)
+    def update(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
         srz_data = self.serializer(instance=data, data=request.data, partial=True)
         if srz_data.is_valid():
             srz_data.save()
@@ -58,25 +54,15 @@ class ProductEditView(APIView):
         else:
             return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class ProductCreateView(APIView):
-    permission_classes = [permissions.IsAdminUser, ]
-    serializer_class = ProductSerializers
-
-    def post(self, request):
+    def create(self, request):
         srz_data = ProductSerializers(data=request.data)
         if srz_data.is_valid():
             srz_data.create(srz_data.validated_data)
             return Response(data=srz_data.data, status=status.HTTP_200_OK)
         return Response(data=srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class ProductDeleteView(APIView):
-    serializer_class = ProductSerializers
-    permission_classes = [permissions.IsAdminUser, ]
-
-    def delete(self, request, pk):
-        data = get_object_or_404(Products, pk=pk)
+    def destroy(self, request, pk):
+        data = get_object_or_404(self.queryset, pk=pk)
         data.is_available = False
         data.save()
         return Response({"successfully": 'disabled'}, status=status.HTTP_200_OK)
@@ -96,7 +82,7 @@ class ProductFavoriteView(APIView):
         return Response(data=srz_data, status=status.HTTP_200_OK)
 
 
-class ProductCategoryView(ViewSet):
+class ProductCategoryViewSet(ViewSet):
     """
     CRUD for products category
     """
