@@ -13,6 +13,7 @@ urlpatterns = [
     # path('delete/<int:pk>/', views.ProductDeleteView.as_view(), name='prod-delete'),
     path('favorite-prods/', views.ProductFavoriteView.as_view(), name='fave-prods'),
     path('favorite-prods/<int:pk>/', views.ProductFavoriteView.as_view(), name='fave-prods-user'),
+    path('new-prods/', views.NewProductsView.as_view(), name='new-prods'),
 ]
 
 router = routers.SimpleRouter()

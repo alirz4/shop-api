@@ -22,7 +22,7 @@ class ProductViewSet(ViewSet):
     serializer = ProductSerializers
 
     def get_permissions(self):
-        if self.action == 'list' or 'retrieve':
+        if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAdminUser]
@@ -96,7 +96,7 @@ class ProductCategoryViewSet(ViewSet):
     queryset = Category.objects.filter(is_available=True)
 
     def get_permissions(self):
-        if self.action == 'list' or 'retrieve':
+        if self.action in ['list', 'retrieve']:
             permission_classes = [permissions.AllowAny]
         else:
             permission_classes = [permissions.IsAdminUser]
@@ -272,3 +272,14 @@ class ProductBrandViewSet(ViewSet):
         data = get_object_or_404(self.queryset, pk=pk)
         data.delete()
         return Response(data={'successfully': 'deleted'})
+
+
+class NewProductsView(APIView):
+    queryset = Products.objects.filter(is_available=True)
+    serializer = ProductSerializers
+    permission_classes = [permissions.AllowAny, ]
+
+    def get(self, request):
+        data = self.queryset[:5]
+        srz_data = self.serializer(instance=data, many=True).data
+        return Response(data=srz_data, status=status.HTTP_200_OK)

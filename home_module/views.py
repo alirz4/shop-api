@@ -9,7 +9,7 @@ from home_module.serializers import UserSerializer, UserRegisterSerializer
 
 
 class UserView(APIView):
-    permission_classes =  [permissions.IsAdminUser, ]
+    permission_classes = [permissions.IsAdminUser, ]
     data = User.objects.all()
 
     def get(self, request):
