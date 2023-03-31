@@ -169,6 +169,9 @@ class ProductInfoViewSet(ViewSet):
 
 
 class ProductImageViewSet(ViewSet):
+    """
+    CRUD for product image
+    """
     queryset = ProductImages.objects.all()
     serializer = ProductImagesSerializer
 
@@ -205,6 +208,10 @@ class ProductImageViewSet(ViewSet):
 
 
 class ProductDescViewSet(ViewSet):
+    """
+    CRUD for product description
+    """
+
     queryset = ProductDescription.objects.all()
     serializer = ProductDescSerializer
     permission_classes = [permissions.IsAdminUser, ]
@@ -240,6 +247,9 @@ class ProductDescViewSet(ViewSet):
 
 
 class ProductBrandViewSet(ViewSet):
+    """
+    CRUD for product brands
+    """
     queryset = ProductBrands.objects.all()
     serializer = ProductBrandSerializer
     permission_classes = [permissions.IsAdminUser, ]
@@ -275,6 +285,9 @@ class ProductBrandViewSet(ViewSet):
 
 
 class NewProductsView(APIView):
+    """
+    Newest 5 products for banners or ...
+    """
     queryset = Products.objects.filter(is_available=True)
     serializer = ProductSerializers
     permission_classes = [permissions.AllowAny, ]
